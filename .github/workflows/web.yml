@@ -23,15 +23,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install download and archive tools
+        run: |
+          apt-get update
+          apt-get install -y curl unzip
+
       - name: Install Godot 4.3 export templates
         run: |
           mkdir -p "$HOME/.local/share/godot/export_templates/4.3.stable"
           curl -L --fail \
-            https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz \
+            https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz \
             -o /tmp/godot-templates.tpz
           mkdir -p /tmp/godot-templates
           unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
-          cp -a /tmp/godot-templates/templates/. "$HOME/.local/share/godot/export_templates/4.3.stable/"
+          cp -a /tmp/godot-templates/templates/. \
+            "$HOME/.local/share/godot/export_templates/4.3.stable/"
 
       - name: Create Web export preset
         run: |
@@ -59,6 +65,8 @@ jobs:
           custom_template/release=""
           variant/extensions_support=false
           variant/thread_support=false
+          vram_texture_compression/for_desktop=true
+          vram_texture_compression/for_mobile=false
           html/export_icon=true
           html/custom_html_shell=""
           html/head_include=""
