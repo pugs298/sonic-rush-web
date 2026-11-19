@@ -20,10 +20,12 @@ The project uses the **Compatibility** renderer and procedural meshes. It is des
 - **R**: return to checkpoint
 - **Esc**: pause
 
-## Visual update
+## Visual upgrades
 
-The courier now has a distinct original teal-and-amber wind-runner silhouette with expressive face details, swept leaf-like fins, a flying scarf, gloves, and trail boots. The stage receives procedural gardens, route inlays, wind arches, rotating turbines, layered floating-rock ribs, and distant clouds. These are original low-poly visualizations, not Sonic assets or a Sonic character model. Materials are shared and the dressing is mesh-only to keep the extra scene cost modest.
+The courier has a distinct teal-and-amber wind-runner silhouette with expressive face details, swept leaf-like fins, a flying scarf, gloves, and trail boots. The floating garden route has procedural flower beds, scattered stone details, carved path arrows, decorated wind arches, rotating turbines, ruined waystations, glowing crystal gardens, translucent waterfall ribbons, route lanterns, cloth banners, grotto stepping stones, layered cliffs, and distant cloud islets. These are original low-poly forms, not Sonic assets or a Sonic character model.
+
+The additional decoration is mesh-only, shares materials, disables shadow casting, and adds no dynamic lights or collision bodies. This helps keep the visual upgrade suitable for Compatibility rendering and modest hardware, though exact Chromebook FPS is unverified.
 
 ## Tuning and known limitations
 
-Movement values are exported at the top of `scripts/player_controller.gd`. Stage dressing is generated in `scripts/stage_visuals.gd`. The game still uses simple prototype rail behavior and placeholder audio; no local Godot run, browser export, or Chromebook FPS test has been performed for this update.
+Movement values are exported at the top of `scripts/player_controller.gd`. Stage dressing is generated in `scripts/stage_visuals.gd`. The game still uses simple prototype rail behavior and placeholder audio; no local Godot run, browser export, or Chromebook FPS test has been performed for these visual changes.
