@@ -1,6 +1,6 @@
 extends CharacterBody3D
 class_name CourierController
-## Tunable low-poly third-person controller: forgiving jumps, air steering and a short burst.
+## Tunable low-poly third-person controller with a distinct original wind courier.
 
 @export_category("Movement")
 @export var ground_acceleration := 28.0
@@ -27,6 +27,8 @@ var dash_cooldown_left := 0.0
 var dash_direction := Vector3.FORWARD
 var camera_sensitivity := 0.0025
 var camera_enabled := false
+var run_phase := 0.0
+var base_visual_y := 0.0
 
 func _ready() -> void:
 	_ensure_action("move_forward", [KEY_W, KEY_UP])
@@ -45,25 +47,9 @@ func _ready() -> void:
 	collider.shape = capsule
 	collider.position.y = 0.82
 	add_child(collider)
-	visual = Node3D.new()
-	visual.name = "CourierVisual"
-	add_child(visual)
-	var body_mesh := MeshInstance3D.new()
-	var capsule_mesh := CapsuleMesh.new()
-	capsule_mesh.radius = 0.4
-	capsule_mesh.height = 1.55
-	body_mesh.mesh = capsule_mesh
-	body_mesh.position.y = 0.82
-	body_mesh.material_override = _material(Color("#167a78"))
-	visual.add_child(body_mesh)
-	var scarf := MeshInstance3D.new()
-	var scarf_mesh := BoxMesh.new()
-	scarf_mesh.size = Vector3(0.82, 0.18, 0.34)
-	scarf.mesh = scarf_mesh
-	scarf.position = Vector3(0, 1.25, 0.32)
-	scarf.material_override = _material(Color("#f4a64e"))
-	visual.add_child(scarf)
+	_build_courier()
 	camera_pivot = Node3D.new()
+	camera_pivot.name = "CameraPivot"
 	camera_pivot.position = Vector3(0, 1.35, 0)
 	add_child(camera_pivot)
 	spring_arm = SpringArm3D.new()
@@ -73,14 +59,120 @@ func _ready() -> void:
 	camera_pivot.add_child(spring_arm)
 	view_camera = Camera3D.new()
 	view_camera.current = true
-	view_camera.fov = 72.0
+	view_camera.fov = 74.0
 	spring_arm.add_child(view_camera)
 	set_physics_process(false)
+
+func _build_courier() -> void:
+	visual = Node3D.new()
+	visual.name = "OriginalWindCourier"
+	add_child(visual)
+	var teal := Color("#16a6a0")
+	var deep_teal := Color("#116e79")
+	var pale := Color("#fff1d2")
+	var amber := Color("#f5a64e")
+	var dark := Color("#17384c")
+	var body := CapsuleMesh.new()
+	body.radius = 0.34
+	body.height = 1.12
+	_part(body, Vector3(0, 0.82, 0), teal, Vector3(1, 1, 0.88))
+	var chest := SphereMesh.new()
+	chest.radius = 0.27
+	chest.height = 0.45
+	_part(chest, Vector3(0, 0.86, -0.22), pale, Vector3(1.0, 0.9, 0.42))
+	var head := SphereMesh.new()
+	head.radius = 0.36
+	head.height = 0.68
+	_part(head, Vector3(0, 1.48, -0.04), teal, Vector3(1.08, 1.0, 0.92))
+	var muzzle := SphereMesh.new()
+	muzzle.radius = 0.19
+	muzzle.height = 0.24
+	_part(muzzle, Vector3(0, 1.36, -0.34), pale, Vector3(1.0, 0.8, 0.8))
+	var nose := SphereMesh.new()
+	nose.radius = 0.075
+	_part(nose, Vector3(0, 1.43, -0.49), dark, Vector3(1.0, 0.8, 0.7))
+	var eye_white := SphereMesh.new()
+	eye_white.radius = 0.12
+	_part(eye_white, Vector3(-0.13, 1.55, -0.325), Color.WHITE, Vector3(0.82, 1.18, 0.42))
+	_part(eye_white, Vector3(0.13, 1.55, -0.325), Color.WHITE, Vector3(0.82, 1.18, 0.42))
+	var pupil := SphereMesh.new()
+	pupil.radius = 0.055
+	_part(pupil, Vector3(-0.12, 1.55, -0.375), dark, Vector3(0.8, 1.1, 0.55))
+	_part(pupil, Vector3(0.14, 1.55, -0.375), dark, Vector3(0.8, 1.1, 0.55))
+	# Swept leaf-like wind fins give the courier a unique aerodynamic silhouette.
+	var fin := SphereMesh.new()
+	fin.radius = 0.25
+	var fin_left := _part(fin, Vector3(-0.24, 1.72, 0.23), deep_teal, Vector3(0.72, 0.42, 1.9))
+	fin_left.rotation.x = -0.28
+	fin_left.rotation.z = -0.34
+	var fin_mid := _part(fin, Vector3(0, 1.79, 0.27), teal.darkened(0.08), Vector3(0.72, 0.42, 2.0))
+	fin_mid.rotation.x = -0.25
+	var fin_right := _part(fin, Vector3(0.24, 1.72, 0.23), deep_teal, Vector3(0.72, 0.42, 1.9))
+	fin_right.rotation.x = -0.28
+	fin_right.rotation.z = 0.34
+	var ear := CylinderMesh.new()
+	ear.top_radius = 0.015
+	ear.bottom_radius = 0.13
+	ear.height = 0.34
+	var ear_l := _part(ear, Vector3(-0.25, 1.79, -0.01), teal, Vector3.ONE)
+	ear_l.rotation.z = 0.18
+	var ear_r := _part(ear, Vector3(0.25, 1.79, -0.01), teal, Vector3.ONE)
+	ear_r.rotation.z = -0.18
+	var ear_inner := SphereMesh.new()
+	ear_inner.radius = 0.07
+	_part(ear_inner, Vector3(-0.25, 1.78, -0.1), amber, Vector3(0.8, 1.3, 0.35))
+	_part(ear_inner, Vector3(0.25, 1.78, -0.1), amber, Vector3(0.8, 1.3, 0.35))
+	# Scarf tails stream behind, in warm amber, instead of copying a familiar mascot outfit.
+	var scarf := BoxMesh.new()
+	scarf.size = Vector3(0.68, 0.13, 0.34)
+	var scarf_part := _part(scarf, Vector3(0, 1.18, 0.29), amber, Vector3.ONE)
+	scarf_part.rotation.x = -0.22
+	var tail := BoxMesh.new()
+	tail.size = Vector3(0.18, 0.1, 0.68)
+	var tail_l := _part(tail, Vector3(-0.2, 1.13, 0.7), amber, Vector3.ONE)
+	tail_l.rotation.x = -0.3
+	tail_l.rotation.z = -0.12
+	var tail_r := _part(tail, Vector3(0.2, 1.13, 0.7), amber.lightened(0.12), Vector3.ONE)
+	tail_r.rotation.x = -0.3
+	tail_r.rotation.z = 0.12
+	# Short arms, bright gloves and oversized trail boots make the silhouette readable at speed.
+	var limb := CapsuleMesh.new()
+	limb.radius = 0.105
+	limb.height = 0.48
+	var arm_l := _part(limb, Vector3(-0.37, 0.88, -0.02), teal.darkened(0.1), Vector3(1, 1, 1))
+	arm_l.rotation.z = 0.28
+	var arm_r := _part(limb, Vector3(0.37, 0.88, -0.02), teal.darkened(0.1), Vector3(1, 1, 1))
+	arm_r.rotation.z = -0.28
+	var glove := SphereMesh.new()
+	glove.radius = 0.14
+	_part(glove, Vector3(-0.43, 0.64, -0.07), pale, Vector3(1.0, 0.8, 1.0))
+	_part(glove, Vector3(0.43, 0.64, -0.07), pale, Vector3(1.0, 0.8, 1.0))
+	var boot := CapsuleMesh.new()
+	boot.radius = 0.17
+	boot.height = 0.46
+	var boot_l := _part(boot, Vector3(-0.2, 0.2, -0.1), amber, Vector3(1.0, 0.8, 1.2))
+	boot_l.rotation.x = PI * 0.5
+	var boot_r := _part(boot, Vector3(0.2, 0.2, -0.1), amber.lightened(0.08), Vector3(1.0, 0.8, 1.2))
+	boot_r.rotation.x = PI * 0.5
+	var sole := BoxMesh.new()
+	sole.size = Vector3(0.3, 0.08, 0.48)
+	_part(sole, Vector3(-0.2, 0.075, -0.12), dark, Vector3.ONE)
+	_part(sole, Vector3(0.2, 0.075, -0.12), dark, Vector3.ONE)
+	base_visual_y = visual.position.y
+
+func _part(mesh: Mesh, at: Vector3, color: Color, mesh_scale: Vector3) -> MeshInstance3D:
+	var instance := MeshInstance3D.new()
+	instance.mesh = mesh
+	instance.position = at
+	instance.scale = mesh_scale
+	instance.material_override = _material(color)
+	visual.add_child(instance)
+	return instance
 
 func _material(color: Color) -> StandardMaterial3D:
 	var material := StandardMaterial3D.new()
 	material.albedo_color = color
-	material.roughness = 0.85
+	material.roughness = 0.68
 	return material
 
 func _ensure_action(action: StringName, keys: Array) -> void:
@@ -152,5 +244,13 @@ func _physics_process(delta: float) -> void:
 		velocity.y *= 0.55
 	move_and_slide()
 	var motion := Vector3(velocity.x, 0.0, velocity.z)
+	var speed_ratio := clampf(motion.length() / top_speed, 0.0, 1.0)
 	if motion.length_squared() > 0.4:
 		visual.rotation.y = lerp_angle(visual.rotation.y, atan2(-motion.x, -motion.z), 12.0 * delta)
+	run_phase += delta * (5.0 + speed_ratio * 10.0)
+	visual.position.y = base_visual_y + (sin(run_phase * 2.0) * 0.035 * speed_ratio if is_on_floor() else 0.0)
+	visual.rotation.z = lerpf(visual.rotation.z, -raw.x * 0.12, 7.0 * delta)
+	if dash_left > 0.0:
+		view_camera.fov = lerpf(view_camera.fov, 80.0, 10.0 * delta)
+	else:
+		view_camera.fov = lerpf(view_camera.fov, 74.0 + speed_ratio * 2.0, 3.0 * delta)
