@@ -20,12 +20,12 @@ The project uses the **Compatibility** renderer and procedural meshes. It is des
 - **R**: return to checkpoint
 - **Esc**: pause
 
-## Visual upgrades
+## Visual direction
 
-The courier has a distinct teal-and-amber wind-runner silhouette with expressive face details, swept leaf-like fins, a flying scarf, gloves, and trail boots. The floating garden route has procedural flower beds, scattered stone details, carved path arrows, decorated wind arches, rotating turbines, ruined waystations, glowing crystal gardens, translucent waterfall ribbons, route lanterns, cloth banners, grotto stepping stones, layered cliffs, and distant cloud islets. These are original low-poly forms, not Sonic assets or a Sonic character model.
+The game uses an original, bright open-zone adventure direction: large readable sky-island silhouettes, ancient wind-tech landmarks, dramatic route arches, airy ribbons, monoliths, and layered cloud banks. It aims for the broad, high-speed open-world feeling of modern platform adventures without reproducing Sonic Frontiers' characters, assets, UI, or exact visual designs. The teal-and-amber courier and floating garden setting remain original.
 
-The additional decoration is mesh-only, shares materials, disables shadow casting, and adds no dynamic lights or collision bodies. This helps keep the visual upgrade suitable for Compatibility rendering and modest hardware, though exact Chromebook FPS is unverified.
+The expansion adds landmark-sized wind hoops, distant temple islands, wayfinder stones, elevated wind-current streaks, route gates, rock spires, floating glyphs and seed lights, and layered clouds. All new objects are procedural meshes, share materials, disable shadows, and use no collision bodies or dynamic lights. Compatibility-renderer and Chromebook performance have not been measured for this update.
 
 ## Tuning and known limitations
 
-Movement values are exported at the top of `scripts/player_controller.gd`. Stage dressing is generated in `scripts/stage_visuals.gd`. The game still uses simple prototype rail behavior and placeholder audio; no local Godot run, browser export, or Chromebook FPS test has been performed for these visual changes.
+Movement values are exported at the top of `scripts/player_controller.gd`. Stage dressing is generated in `scripts/stage_visuals.gd` and `scripts/horizon_expansion.gd`. The game still uses simple prototype rail behavior and placeholder audio; run the Godot editor and test the full play path before treating this build as verified.
