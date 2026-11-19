@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir -p "$HOME/.local/share/godot/export_templates/4.3.stable"
           curl -L --fail \
-            https://downloads.tuxfamily.org/godotengine/4.3/Godot_v4.3-stable_export_templates.tpz \
+            https://github.com/godotengine/godot-builds/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz \
             -o /tmp/godot-templates.tpz
           mkdir -p /tmp/godot-templates
           unzip -q /tmp/godot-templates.tpz -d /tmp/godot-templates
