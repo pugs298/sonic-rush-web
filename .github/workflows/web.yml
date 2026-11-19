@@ -21,8 +21,22 @@ jobs:
       image: barichello/godot-ci:4.3
     steps:
       - uses: actions/checkout@v4
+         - name: Create Web export preset
+        run: |
+          mkdir -p web
+          cat > export_presets.cfg <<'EOF'
+          [preset.0]
+          name="Web"
+          platform="Web"
+          runnable=true
+          export_filter="all_resources"
+          export_path="web/index.html"
+
+          [preset.0.options]
+          EOF
+
       - name: Export Web
-        run: godot --headless --path . --editor --quit-after 2 && godot --headless --path . --export-release "Web" web/index.html
+        run: godot --headless --path . --export-release "Web" web/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web
